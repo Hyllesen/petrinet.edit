@@ -20,6 +20,8 @@ import org.eclipse.emf.edit.provider.IStructuredItemContentProvider;
 import org.eclipse.emf.edit.provider.ITreeItemContentProvider;
 import org.eclipse.emf.edit.provider.ItemProviderAdapter;
 
+import org.eclipse.emf.edit.provider.ViewerNotification;
+import petrinet.Arc;
 import petrinet.PetrinetPackage;
 
 /**
@@ -149,7 +151,13 @@ public class ArcItemProvider
 	 */
 	@Override
 	public String getText(Object object) {
-		return "Arc";
+		if(object instanceof Arc) {
+			Arc arc = (Arc) object;
+			String sourceName = arc.getSource().getName();
+			String targetName = arc.getTarget().getName();
+			return "Arc " + sourceName + " -> " + targetName;
+		}
+		return "Not Arc " + object.toString();
 	}
 	
 
@@ -163,6 +171,14 @@ public class ArcItemProvider
 	@Override
 	public void notifyChanged(Notification notification) {
 		updateChildren(notification);
+
+		switch (notification.getFeatureID(Arc.class)) {
+			case PetrinetPackage.ARC__SOURCE:
+			case PetrinetPackage.ARC__TARGET:
+			case PetrinetPackage.ARC__PETRINET:
+				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
+				return;
+		}
 		super.notifyChanged(notification);
 	}
 
