@@ -153,9 +153,13 @@ public class ArcItemProvider
 	public String getText(Object object) {
 		if(object instanceof Arc) {
 			Arc arc = (Arc) object;
+			try {
 			String sourceName = arc.getSource().getName();
 			String targetName = arc.getTarget().getName();
 			return "Arc " + sourceName + " -> " + targetName;
+			} catch (NullPointerException e) {
+				return "Arc null -> null";
+			}
 		}
 		return "Not Arc " + object.toString();
 	}
